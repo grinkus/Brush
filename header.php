@@ -6,6 +6,22 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="description" content="<?php bloginfo('description'); ?>">
 	<meta name="viewport" content="width=device-width">
-	<?php wp_head(); ?>
+<?php
+	wp_head();
+	global $colours;
+	if ( isset($colours) ) {
+?>
+	<style>
+		.half--first {
+			border-color: rgba(<?= $colours[0]; ?>, .2);
+		}
+
+		.half--second {
+			border-color: rgba(<?= $colours[1]; ?>, .2);
+		}
+	</style>
+<?php
+	}
+?>
 </head>
 <body>

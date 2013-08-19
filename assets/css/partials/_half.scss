@@ -1,0 +1,16 @@
+.half {
+	border-style: solid;
+	border-width: 1.5em;
+	border-right-width: 0;
+
+	display: inline-block;
+	height: 670px;
+	text-align: center;
+	vertical-align: top;
+	width: 50%;
+}
+
+.half + .half {
+	border-left-width: 0;
+	border-right-width: 1.5em;
+}

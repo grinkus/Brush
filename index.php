@@ -27,6 +27,7 @@
 			$output .= '<img src="' . $src . '">';
 		} else {
 			$output .= 'SHAME ON YOU!';
+			$colours[] = '0, 0, 0';
 		}
 
 		$output .= '</article>';

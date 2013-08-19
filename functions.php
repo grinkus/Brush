@@ -107,7 +107,7 @@ class Brush_image_colour {
 			$b = hexdec( substr($hex, 4, 2) );
 		}
 		$rgb = array($r, $g, $b);
-		return implode(",", $rgb);
+		return implode(", ", $rgb);
 	}
 }
 

@@ -13,11 +13,11 @@
 ?>
 	<style>
 		.half--first {
-			border-color: rgba(<?= $colours[0]; ?>, .2);
+			border-color: rgba(<?= $colours[0]; ?>, .3);
 		}
 
 		.half--second {
-			border-color: rgba(<?= $colours[1]; ?>, .2);
+			border-color: rgba(<?= $colours[1]; ?>, .3);
 		}
 	</style>
 <?php

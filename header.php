@@ -19,6 +19,11 @@
 		.halves--half__second {
 			border-color: rgba(<?= $colours[1]; ?>, .3);
 		}
+
+		html {
+			margin-top: 0 !important;
+			padding-top: 28px;
+		}
 	</style>
 <?php
 	}

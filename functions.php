@@ -30,7 +30,6 @@ class Brush_theme_init {
 
 	public function __construct() {
 		add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
-		add_filter( 'show_admin_bar', '__return_false' );
 	}
 }
 

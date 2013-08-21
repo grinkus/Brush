@@ -12,11 +12,11 @@
 	if ( isset($colours) ) {
 ?>
 	<style>
-		.half--first {
+		.halves--half__first {
 			border-color: rgba(<?= $colours[0]; ?>, .3);
 		}
 
-		.half--second {
+		.halves--half__second {
 			border-color: rgba(<?= $colours[1]; ?>, .3);
 		}
 	</style>

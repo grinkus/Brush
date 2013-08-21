@@ -30,6 +30,7 @@ class Brush_theme_init {
 
 	public function __construct() {
 		add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
+		add_filter( 'show_admin_bar', '__return_false' );
 	}
 }
 
@@ -56,7 +57,7 @@ class Brush_filter_content {
 			1 => get_posts( $author2 )
 		);
 
-		return $result;
+		return array($result, date("Y-m-d", strtotime("$year-$monthnum-$day")));
 	}
 }
 

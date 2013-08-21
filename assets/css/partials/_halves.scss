@@ -1,0 +1,30 @@
+.halves {
+	display: table;
+	height: 100%;
+	width: 100%;
+
+	img {
+		display: inline-block;
+		vertical-align: top;
+	}
+}
+
+.halves--half {
+	border-style: solid;
+	border-width: 1.5em;
+	display: table-cell;
+	padding: 1.5em;
+	vertical-align: middle;
+	text-align: center;
+	width: 50%;
+}
+
+.halves--half__first {
+	border-right-width: 0;
+	padding-right: 0.75em;
+}
+
+.halves--half__second {
+	border-left-width: 0;
+	padding-left: 0.75em;
+}

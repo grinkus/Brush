@@ -24,6 +24,10 @@ class Brush_setup_headers {
 }
 
 class Brush_theme_init {
+	public function add_image_size() {
+		add_image_size('featured_preview', 100, 100, true);
+	}
+
 	public function add_theme_support() {
 		add_theme_support( 'post-thumbnails', array( 'post' ) );
 	}
@@ -44,10 +48,37 @@ class Brush_theme_init {
 		remove_menu_page('edit-comments.php');
 	}
 
+	public function manage_posts_columns( $defaults ) {
+		$defaults['image'] = __( 'Image', 'brush' );
+		return $defaults;
+	}
+
+	private function get_featured_image( $post_ID ) {
+		$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
+		if ( $post_thumbnail_id ) {
+			$post_thumbnail_img = wp_get_attachment_image( $post_thumbnail_id, 'featured_preview' );
+			return $post_thumbnail_img;
+		}
+	}
+
+	public function manage_posts_custom_column( $column_name, $post_ID ) {
+		if ($column_name == 'image') {
+			$post_featured_image = $this->get_featured_image( $post_ID );
+			if ($post_featured_image) {
+				echo $post_featured_image;
+			}
+		}
+	}
+
 	public function __construct() {
+		$this->add_image_size();
+
 		add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
 		add_action( 'init', array( $this, 'remove_post_type_support' ) );
 		add_action( 'admin_menu', array( $this, 'remove_menu_page' ) );
+
+		add_filter( 'manage_posts_columns', array( $this, 'manage_posts_columns' ) );
+		add_action( 'manage_posts_custom_column', array( $this, 'manage_posts_custom_column' ), 10, 2 );
 	}
 }
 
@@ -79,7 +110,7 @@ class Brush_filter_content {
 }
 
 class Brush_image_colour {
-	function palette( $src, $numColours = 3, $granularity = 5 ) {
+	public function palette( $src, $numColours = 3, $granularity = 5 ) {
 		$granularity = max( 1, abs( (int)$granularity ) );
 		$colours = array();
 		$size = @getimagesize( $src );
@@ -112,7 +143,7 @@ class Brush_image_colour {
 		return array_slice( array_keys( $colours ), 0, $numColours);
 	}
 
-	function hex2rgb( $hex ) {
+	public function hex2rgb( $hex ) {
 		$hex = str_replace("#", "", $hex);
 
 		if ( strlen($hex) == 3 ) {

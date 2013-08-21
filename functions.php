@@ -39,9 +39,15 @@ class Brush_theme_init {
 		remove_post_type_support( 'post', 'post-formats' );
 	}
 
+	public function remove_menu_page() {
+		remove_menu_page('edit.php?post_type=page');
+		remove_menu_page('edit-comments.php');
+	}
+
 	public function __construct() {
 		add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
 		add_action( 'init', array( $this, 'remove_post_type_support' ) );
+		add_action( 'admin_menu', array( $this, 'remove_menu_page' ) );
 	}
 }
 

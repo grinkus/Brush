@@ -1,24 +1,28 @@
 <?php
-	$newestPost = get_posts( array(
-	              	'numberposts' => 1,
-	              	'orderby' => 'post_date',
-	              	'order' => 'DESC',
-	              	'post_type' => 'post',
-	              	'post_status' => 'publish' )
-	              );
-	$newestPost = $newestPost[0]->post_date;
-	$newestPost = array(
-	              	'year' => substr($newestPost, 0, 4),
-	              	'month' => substr($newestPost, 5, 2),
-	              	'day' => substr($newestPost, 8, 2)
-	              );
+	$date = get_query_var('date');
 
-	$posts = $brush->filter->by_date($newestPost['year'], $newestPost['month'], $newestPost['day']);
-	$date = $posts[1];
+	$yesterday = date('Y-m-d', strtotime($date . ' yesterday'));
+	$tomorrow = date('Y-m-d', strtotime($date . ' tomorrow'));
+
+	if ( !$date || strtotime($date) >= strtotime( date( 'Y-m-d' ) ) ) {
+		$newestPost = get_posts( array(
+			'numberposts' => 1,
+			'orderby' => 'post_date',
+			'order' => 'DESC',
+			'post_type' => 'post',
+			'post_status' => 'publish' )
+		);
+		$date = substr( $newestPost[0]->post_date, 0, 10 );
+
+		$tomorrow = false;
+	}
+	$by_date = explode( "-", $date );
+	$posts = $brush->filter->by_date( $by_date[0], $by_date[1], $by_date[2] );
+	$by_date = $posts[1];
 	$posts = $posts[0];
 	$colours = array();
 	$output = "";
-	$classes = '';
+	$classes = "";
 
 	$output .= '<div class="halves">';
 	foreach( $posts as $post ) {

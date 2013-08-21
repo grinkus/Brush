@@ -71,6 +71,11 @@ class Brush_theme_init {
 		}
 	}
 
+	public function add_query_vars_filter( $vars ) {
+		$vars[] = "date";
+		return $vars;
+	}
+
 	public function __construct() {
 		$this->add_image_size();
 
@@ -80,6 +85,8 @@ class Brush_theme_init {
 
 		add_filter( 'manage_posts_columns', array( $this, 'manage_posts_columns' ) );
 		add_action( 'manage_posts_custom_column', array( $this, 'manage_posts_custom_column' ), 10, 2 );
+
+		add_filter( 'query_vars', array( $this, 'add_query_vars_filter' ) );
 	}
 }
 

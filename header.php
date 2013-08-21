@@ -31,3 +31,24 @@
 ?>
 </head>
 <body>
+<?php
+	global $yesterday, $tomorrow;
+
+	if ($yesterday) {
+		echo '<a class="navigate navigate--yesterday" ';
+		echo 'href="' . site_url('/?date=' . $yesterday) . '">';
+		echo '<span class="navigate--wrapper">←</span>';
+		echo '</a>';
+	} else {
+		echo '<span class="navigate navigate--yesterday"><span class="navigate--wrapper">←</span></span>';
+	}
+
+	if ($tomorrow) {
+		echo '<a class="navigate navigate--tomorrow" ';
+		echo 'href="' . site_url('/?date=' . $tomorrow) . '">';
+		echo '<span class="navigate--wrapper">→</span>';
+		echo '</a>';
+	} else {
+		echo '<span class="navigate navigate--tomorrow"><span class="navigate--wrapper">→</span></span>';
+	}
+?>

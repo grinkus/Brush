@@ -28,8 +28,20 @@ class Brush_theme_init {
 		add_theme_support( 'post-thumbnails', array( 'post' ) );
 	}
 
+	public function remove_post_type_support() {
+		remove_post_type_support( 'post', 'title' );
+		remove_post_type_support( 'post', 'editor' );
+		remove_post_type_support( 'post', 'excerpt' );
+		remove_post_type_support( 'post', 'custom-fields' );
+		remove_post_type_support( 'post', 'comments' );
+		remove_post_type_support( 'post', 'revisions' );
+		remove_post_type_support( 'post', 'page-attributes' );
+		remove_post_type_support( 'post', 'post-formats' );
+	}
+
 	public function __construct() {
 		add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
+		add_action( 'init', array( $this, 'remove_post_type_support' ) );
 	}
 }
 

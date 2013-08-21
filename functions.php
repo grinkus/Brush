@@ -25,7 +25,8 @@ class Brush_setup_headers {
 
 class Brush_theme_init {
 	public function add_image_size() {
-		add_image_size('featured_preview', 100, 100, true);
+		add_image_size('featured-preview', 100, 100, true);
+		add_image_size('brush-fhd', 1920, 0, false);
 	}
 
 	public function add_theme_support() {
@@ -56,7 +57,7 @@ class Brush_theme_init {
 	private function get_featured_image( $post_ID ) {
 		$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
 		if ( $post_thumbnail_id ) {
-			$post_thumbnail_img = wp_get_attachment_image( $post_thumbnail_id, 'featured_preview' );
+			$post_thumbnail_img = wp_get_attachment_image( $post_thumbnail_id, 'featured-preview' );
 			return $post_thumbnail_img;
 		}
 	}

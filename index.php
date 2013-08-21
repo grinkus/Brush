@@ -32,7 +32,8 @@
 		}
 
 		if ( isset( $post ) && has_post_thumbnail( $post->ID ) ) {
-			$src = wp_get_attachment_url( get_post_thumbnail_id( $post->ID ) );
+			$src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'brush-fhd' );
+			$src = $src[0];
 			$colour = $brush->image->palette( $src );
 
 			if ( $colour[0] == "000000" || $colour[0] == "FFFFFF" ) {

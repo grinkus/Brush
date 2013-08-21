@@ -13,7 +13,7 @@
 	              	'day' => substr($newestPost, 8, 2)
 	              );
 
-	$posts = $brush->filter->by_date($newestPost['year'], $newestPost['month'], 21);
+	$posts = $brush->filter->by_date($newestPost['year'], $newestPost['month'], $newestPost['day']);
 	$date = $posts[1];
 	$posts = $posts[0];
 	$colours = array();

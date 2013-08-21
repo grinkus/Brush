@@ -19,11 +19,12 @@
 		.halves--half__second {
 			border-color: rgba(<?= $colours[1]; ?>, .3);
 		}
-
+<?php if( $user_ID ) : ?>
 		html {
 			margin-top: 0 !important;
 			padding-top: 28px;
 		}
+<?php endif; ?>
 	</style>
 <?php
 	}

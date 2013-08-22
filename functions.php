@@ -5,6 +5,11 @@ class Brush_setup_headers {
 		wp_enqueue_style( 'brush_css' );
 	}
 
+	public function register_theme_scripts() {
+		wp_register_script( 'brush_imageFit', get_bloginfo('template_directory') . '/assets/js/imageFit.js', false, false, true);
+		wp_enqueue_script( 'brush_imageFit' );
+	}
+
 	public function append_theme_favicon() {
 		echo '<link rel="shortcut icon" href="/favicon.ico">' . "\n";
 		echo '<link rel="shortcut icon" href="/favicon.png">' . "\n";
@@ -16,6 +21,7 @@ class Brush_setup_headers {
 
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_theme_styles' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_theme_scripts' ) );
 		add_action( 'init', array( $this, 'remove_header_info' ) );
 
 		// Skip this until the favicon is made

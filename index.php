@@ -52,7 +52,7 @@
 
 			$colours[] = $brush->image->hex2rgb( $colour );
 			$classes .= ' author-' . get_the_author_meta( 'nickname', $post->post_author );
-			$o .= '<img class="image" src="' . $src . '">';
+			$o .= '<img class="image portrait" src="' . $src . '">';
 		} else {
 			if (substr( current_time('mysql'), 0, 10 ) == $date) {
 				$o .= get_bloginfo('name');

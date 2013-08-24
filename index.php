@@ -1,22 +1,27 @@
 <?php
-	$date = get_query_var('date');
+	$queryDate = strtotime( get_query_var('date') );
+	$currentDate = strtotime( date('Y-m-d') );
+	$newestPostDate = strtotime( get_lastpostdate() );
+	$tomorrow = true;
 
-	$yesterday = date('Y-m-d', strtotime($date . ' yesterday'));
-	$tomorrow = date('Y-m-d', strtotime($date . ' tomorrow'));
+	if ( !$queryDate || $queryDate > $currentDate ) {
+		$queryDate = $currentDate;
+	}
 
-	if ( !$date || strtotime($date) >= strtotime( date( 'Y-m-d' ) ) ) {
-		$newestPost = get_posts( array(
-			'numberposts' => 1,
-			'orderby' => 'post_date',
-			'order' => 'DESC',
-			'post_type' => 'post',
-			'post_status' => 'publish' )
-		);
-		$date = substr( $newestPost[0]->post_date, 0, 10 );
+	if ( $queryDate == $currentDate ) {
+		if ( $currentDate != $newestPostDate ) {
+			$queryDate = strtotime( date('Y-m-d', $currentDate) . ' yesterday');
+		}
 
 		$tomorrow = false;
 	}
+
+	$date = date('Y-m-d', $queryDate);
 	$by_date = explode( "-", $date );
+
+	$yesterday = date('Y-m-d', strtotime($date . ' yesterday'));
+	$tomorrow = $tomorrow ? date('Y-m-d', strtotime($date . ' tomorrow')) : false;
+	
 	$posts = $brush->filter->by_date( $by_date[0], $by_date[1], $by_date[2] );
 	$by_date = $posts[1];
 	$posts = $posts[0];

@@ -1,7 +1,7 @@
 <?php
 	$queryDate = strtotime( get_query_var('date') );
 	$currentDate = strtotime( date('Y-m-d') );
-	$newestPostDate = strtotime( get_lastpostdate() );
+	$newestPostDate = strtotime( substr( get_lastpostdate(), 0, 10 ) );
 	$tomorrow = true;
 
 	if ( !$queryDate || $queryDate > $currentDate ) {
@@ -15,6 +15,7 @@
 
 		$tomorrow = false;
 	}
+
 
 	$date = date('Y-m-d', $queryDate);
 	$by_date = explode( "-", $date );
@@ -55,22 +56,31 @@
 				$colour = $colour[0];
 			}
 
-			$colours[] = $brush->image->hex2rgb( $colour );
+			$articleColour = $brush->image->hex2rgb( $colour );
 			$classes .= ' author-' . get_the_author_meta( 'nickname', $post->post_author );
 			$o .= '<img class="image portrait" src="' . $src . '">';
 		} else {
 			if (substr( current_time('mysql'), 0, 10 ) == $date) {
 				$o .= get_bloginfo('name');
 				$classes .= ' halves--half__blank';
-				$colours[] = '255, 255, 255';
+				$articleColour = '255, 255, 255';
 			} else {
 				$o .= 'SHAME ON YOU!';
 				$classes .= ' halves--half__shame';
-				$colours[] = '255, 0, 0';
+				$articleColour = '255, 0, 0';
 			}
 		}
+/*
+		.halves--half__first {
+			border-color: rgba(<?= $colours[0]; ?>, .3);
+		}
 
-		$pre = '<article class="halves--half' . $classes . '">';
+		.halves--half__second {
+			border-color: rgba(<?= $colours[1]; ?>, .3);
+		}
+*/
+
+		$pre = '<article class="halves--half' . $classes . '" data-brush-colour="' . $articleColour . '">';
 
 		$output .= $pre . $o;
 

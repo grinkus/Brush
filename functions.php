@@ -1,13 +1,14 @@
 <?php
 class Brush_setup_headers {
-	public function register_theme_styles() {
-		wp_register_style( 'brush_css', get_bloginfo('stylesheet_url'), false, false, 'all' );
-		wp_enqueue_style( 'brush_css' );
-	}
-
 	public function register_theme_scripts() {
-		wp_register_script( 'brush_imageFit', get_bloginfo('template_directory') . '/assets/js/imageFit.js', false, false, true);
-		wp_enqueue_script( 'brush_imageFit' );
+		wp_register_script( 'brush-imageFit', get_bloginfo('template_directory') . '/assets/js/imageFit.js', false, false, true);
+		wp_enqueue_script( 'brush-imageFit' );
+
+		wp_register_script( 'brush-adjustBorderColour', get_bloginfo('template_directory') . '/assets/js/adjustBorderColour.js', false, false, true);
+		wp_enqueue_script( 'brush-adjustBorderColour' );
+
+		wp_register_script( 'brush-navigationPreload', get_bloginfo('template_directory') . '/assets/js/navigationPreload.js', false, false, true);
+		wp_enqueue_script( 'brush-navigationPreload' );
 	}
 
 	public function append_theme_favicon() {
@@ -20,7 +21,6 @@ class Brush_setup_headers {
 	}
 
 	public function __construct() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_theme_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_theme_scripts' ) );
 		add_action( 'init', array( $this, 'remove_header_info' ) );
 

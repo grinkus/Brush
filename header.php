@@ -8,47 +8,26 @@
 	<meta name="viewport" content="width=device-width">
 <?php
 	wp_head();
-	global $colours;
-	if ( isset($colours) ) {
 ?>
-	<style>
-		.halves--half__first {
-			border-color: rgba(<?= $colours[0]; ?>, .3);
-		}
-
-		.halves--half__second {
-			border-color: rgba(<?= $colours[1]; ?>, .3);
-		}
+	<link rel="stylesheet" title="main-stylesheet" href="<?= get_bloginfo('stylesheet_url'); ?>">
 <?php if( $user_ID ) : ?>
+	<style>
 		html {
 			margin-top: 0 !important;
 			padding-top: 28px;
 		}
-<?php endif; ?>
 	</style>
-<?php
-	}
-?>
+<?php endif; ?>
 </head>
 <body>
 <?php
 	global $yesterday, $tomorrow;
 
-	if ($yesterday) {
-		echo '<a class="navigate navigate--yesterday" ';
-		echo 'href="' . site_url('/?date=' . $yesterday) . '">';
-		echo '<span class="navigate--wrapper">←</span>';
-		echo '</a>';
-	} else {
-		echo '<span class="navigate navigate--yesterday"><span class="navigate--wrapper">←</span></span>';
-	}
+	echo '<a id="navigation-backward" data-brush-direction="backward" class="navigate navigate--yesterday"';
+	echo $yesterday ? ' href="' . site_url('/?date=' . $yesterday) . '">' : '>';
+	echo '<span class="navigate--wrapper">←</span></a>';
 
-	if ($tomorrow) {
-		echo '<a class="navigate navigate--tomorrow" ';
-		echo 'href="' . site_url('/?date=' . $tomorrow) . '">';
-		echo '<span class="navigate--wrapper">→</span>';
-		echo '</a>';
-	} else {
-		echo '<span class="navigate navigate--tomorrow"><span class="navigate--wrapper">→</span></span>';
-	}
+	echo '<a id="navigation-forward" data-brush-direction="forward" class="navigate navigate--tomorrow"';
+	echo $tomorrow ? ' href="' . site_url('/?date=' . $tomorrow) . '">' : '>';
+	echo '<span class="navigate--wrapper">→</span></a>';
 ?>

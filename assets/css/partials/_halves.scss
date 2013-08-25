@@ -17,6 +17,8 @@
 	vertical-align: middle;
 	text-align: center;
 	width: 50%;
+
+	@include vendor-prefix(transition, border-color 0.5s ease);
 }
 
 .halves--half__first {

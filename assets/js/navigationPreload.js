@@ -1,146 +1,216 @@
-(function (){
+(function () {
     'use strict';
 
-    var navigation = {},
-        getPage = function ( url, which ) {
-            var xhr = null,
-                temp = null,
-                handleResponse = function () {
-                    if ( xhr.readyState == 4 && xhr.status == 200 ) {
-                        temp = document.createElement( 'div' );
-                        temp.innerHTML = xhr.responseText;
+    var cache = {},
+        navLinks = [
+            document.getElementById('navigation-backward'),
+            document.getElementById('navigation-forward')
+        ],
 
-                        setupDirection(temp, which);
+        cacheLinks = function (html, url) {
+            var links = {
+                    backward: /<[^>]*id="navigation-backward"[^>]*>/g,
+                    forward: /<[^>]*id="navigation-forward"[^>]*>/g
+                },
+                key;
 
-                        temp = null;
+            cache[url].nav = {};
+
+            function getLink(key) {
+                var elem = html.match(links[key]),
+                    re = /href="([^"]*)"/g,
+                    href = re.exec(elem[0]);
+
+                if (href) {
+                    return href[1];
+                }
+
+                return undefined;
+            }
+
+            for (key in links) {
+                if (links.hasOwnProperty(key)) {
+                    cache[url].nav[key] = getLink(key);
+                }
+            }
+        },
+
+        cacheHalves = function (html, url) {
+            // This obviously breaks if there is at least one article in the .halves--half
+            var re = /<article[^>]*halves--half[^>]*>(.*?)<\/article>/g;
+
+            cache[url].halves = html.match(re);
+        },
+
+        cacheHtml = function (html, url) {
+            cache[url] = {};
+            cacheLinks(html, url);
+            cacheHalves(html, url);
+        },
+
+        preloadHalves = function (url) {
+            var i;
+
+            if (!cache[url].el) {
+                cache[url].el = document.createElement('div');
+                cache[url].el.setAttribute('class', 'halves');
+
+                for (i = cache[url].halves.length - 1; i >= 0; i = i - 1) {
+                    cache[url].el.innerHTML = cache[url].halves[i] + cache[url].el.innerHTML;
+                }
+            }
+        },
+
+        insertAfter = function (newNode, referenceNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        },
+
+        prepare = function (url) {
+            var href,
+                direction,
+                el,
+                i;
+
+            for (i = navLinks.length - 1; i >= 0; i = i - 1) {
+                href = navLinks[i].getAttribute('href');
+                direction = navLinks[i].getAttribute('data-brush-direction');
+                if (href && href === url) {
+                    navLinks[i].setAttribute('class', navLinks[i].getAttribute('class').replace(' not-loaded', ''));
+
+                    preloadHalves(url);
+
+                    el = cache[url].el;
+
+                    if (!document.contains(el)) {
+                        if (direction && direction === "backward") {
+                            document.body.insertBefore(el, document.getElementById('current-page'));
+                            el.setAttribute('class', 'halves halves__previous');
+                        } else {
+                            insertAfter(el, document.getElementById('current-page'));
+                            el.setAttribute('class', 'halves halves__next');
+                        }
                     }
-                };
+                }
+            }
+        },
 
-            navigation[ which ].loaded = false;
+        getPage = function (url) {
+            var xhr;
+
+            function handleResponse() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    cacheHtml(xhr.responseText, url);
+                    prepare(url);
+                }
+            }
 
             xhr = new XMLHttpRequest();
-            xhr.open( 'GET', url, true );
+            xhr.open('GET', url, true);
             xhr.onreadystatechange = handleResponse;
             xhr.send();
         },
 
-        setupDirection = function ( elem, which ) {
-            navigation[ which ] = {};
-
-            navigation[ which ].halves = elem.getElementsByClassName( 'halves--half' );
-            navigation[ which ].navLinks = elem.getElementsByClassName( 'navigate' );
-
-            navigation[ which ].loaded = true;
-
-            checkNavigationLinks();
-        },
-
         preloadPages = function () {
             var href,
-                elem;
+                i;
 
-            for ( var i = navigation['current'].navLinks.length - 1; i >= 0; i = i - 1 ) {
-                elem = navigation['current'].navLinks[i];
-                href = elem.getAttribute('href');
+            for (i = navLinks.length - 1; i >= 0; i = i - 1) {
+                href = navLinks[i].getAttribute('href');
 
-                if ( href ) {
-                    getPage( href, elem.getAttribute( 'data-brush-direction' ) );
+                if (href) {
+                    if (!cache[href]) {
+                        navLinks[i].setAttribute('class', navLinks[i].getAttribute('class') + ' not-loaded');
+                        getPage(href);
+                    } else {
+                        prepare(href);
+                    }
+                }
+            }
+        },
+
+        handleClick = function (el) {
+            var url = el.getAttribute('href'),
+                direction = el.getAttribute('data-brush-direction'),
+                current,
+                removed;
+
+            if (url && !~el.getAttribute('class').indexOf('not-loaded')) {
+                current = cache[url].el;
+
+                document.getElementById('current-page').removeAttribute('id');
+                current.setAttribute('id', 'current-page');
+                current.setAttribute('class', current.getAttribute('class').replace('halves__previous', '').replace('halves__next', ''));
+
+                switch (direction) {
+                case 'forward':
+                    removed = cache[navLinks[0].getAttribute('href')].el;
+                    el.setAttribute('href', cache[url].nav.forward);
+                    navLinks[0].setAttribute('href', cache[url].nav.backward);
+                    break;
+                case 'backward':
+                    removed = cache[navLinks[1].getAttribute('href')].el;
+                    el.setAttribute('href', cache[url].nav.backward);
+                    navLinks[1].setAttribute('href', cache[url].nav.forward);
+                    break;
+                default:
+                    return;
                 }
 
-                href = null;
-                elem = null;
-            };
-        },
+                removed.parentNode.removeChild(removed);
 
-        show = function( which ) {
-            var half,
-                halves = document.getElementsByClassName( 'halves--half' ),
-                href;
-
-            for ( var i = halves.length - 1; i >= 0; i = i - 1) {
-                half = navigation[ which ].halves[i];
-                halves[i].innerHTML = half.innerHTML;
-                halves[i].setAttribute( 'data-brush-colour', half.getAttribute( 'data-brush-colour' ) );
-            };
-
-            href = navigation[ which ].navLinks[0].getAttribute( 'href' );
-            if ( href ) {
-                document.getElementById( 'navigation-backward' ).setAttribute( 'href', href );
-            } else {
-                document.getElementById( 'navigation-backward' ).removeAttribute( 'href' );
-            }
-
-            href = navigation[ which ].navLinks[1].getAttribute( 'href' );
-            if ( href ) {
-                document.getElementById( 'navigation-forward' ).setAttribute( 'href', href );
-            } else {
-                document.getElementById( 'navigation-forward' ).removeAttribute( 'href' );
-            }
-
-            resetCurrent();
-
-            fitImages();
-            adjustBorderColour();
-        },
-
-        bindClickTriggers = function () {
-            navigation.elems = document.getElementsByClassName( 'navigate' );
-
-            for (var i = navigation.elems.length - 1; i >= 0; i = i - 1) {
-                var elem = navigation.elems[i];
-
-                navigation[ elem.getAttribute( 'data-brush-direction' ) ] = elem.getAttribute( 'href' );
-
-                elem.onclick = function (e) {
-                    window.history.pushState( false, document.title, this.getAttribute( 'href' ) );
-                    show( this.getAttribute( 'data-brush-direction' ) );
-                    this.className = this.className + ' not-loaded';
-                    e.preventDefault();
-                };
-            };
-        },
-
-        resetCurrent = function () {
-            setupDirection( document, 'current' );
-
-            preloadPages();
-        },
-
-        checkNavigationLinks = function () {
-            var forward = document.getElementById( 'navigation-forward' ),
-                backward = document.getElementById( 'navigation-backward' );
-
-            if ( !navigation.forward.loaded ) {
-                if ( !~forward.className.indexOf(' not-loaded') ) {
-                    forward.className = forward.className + ' not-loaded';
-                }
-            } else {
-                forward.className = forward.className.replace(' not-loaded', '');
-            }
-
-            if ( !navigation.backward.loaded ) {
-                if ( !~backward.className.indexOf(' not-loaded') ) {
-                    backward.className = backward.className + ' not-loaded';
-                }
-            } else {
-                backward.className = backward.className.replace(' not-loaded', '');
+                preloadPages();
+                fitImages();
+                adjustBorderColour();
             }
         },
 
         init = function () {
-            bindClickTriggers();
+            var halvesDiv = document.getElementsByClassName('halves');
 
-            resetCurrent();
+            halvesDiv[0].setAttribute('id', 'current-page');
 
-            // navigation.interval = setInterval( function () {
-            //     checkNavigationLinks();
-            // }, 500 );
-        }();
-})();
+            cacheHtml(document.documentElement.innerHTML, window.location.href);
 
-/*
+            preloadPages();
 
-# Pirmiausia
-Davus du adresus preloadinam du page'us. navigate.backward ir navigate.forward
+            navLinks[0].onclick = function (e) {
+                handleClick(this);
+                e.preventDefault();
+            };
 
-*/
+            navLinks[1].onclick = function (e) {
+                handleClick(this);
+                e.preventDefault();
+            };
+
+            function clickBackwardLink() {
+                navLinks[0].click();
+            }
+
+            function clickForwardLink() {
+                navLinks[1].click();
+            }
+
+            document.onkeydown = function (e) {
+                e = e || window.event;
+                switch (e.keyCode) {
+                case 37: // Cursor left key
+                    clickBackwardLink();
+                    break;
+                case 39: // Cursor right key
+                    clickForwardLink();
+                    break;
+                case 74: // 'j' key
+                    clickBackwardLink();
+                    break;
+                case 75: // 'k' key
+                    clickForwardLink();
+                    break;
+                default:
+                    return;
+                }
+            };
+        };
+
+    init();
+}());

@@ -37,7 +37,8 @@ img {
 	text-decoration: none;
 	top: 0;
 	opacity: 0;
-	transition: background-color .25s ease-in-out;
+	@include vendor-prefix(transition, background-color .25s ease-in-out);
+	z-index: 10;
 
 	&[href] {
 		opacity: 1;
